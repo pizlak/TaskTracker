@@ -16,7 +16,7 @@ class TaskController extends Controller
 
     public function create(Request $request)
     {
-        $user = User::find(2);
+        $user = User::find(1);
         $taskData = [
             'title' => $request->input('title'),
             'description' => $request->input('description'),
