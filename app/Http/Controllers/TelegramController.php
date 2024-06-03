@@ -12,9 +12,11 @@ class TelegramController extends Controller
 
     public function sendMessage(Request $request)
     {
-        $userId = $this->getUserId();
-        $textMessage = urlencode($request->input('tg-message'));
-        $urlQuery = self::URL . 'sendMessage?chat_id=' . $userId . '&text=' . $textMessage;
+        $urlParam = [
+            'chat_id' => $this->getUserId(),
+            'text' => urlencode($request->input('tg-message'))
+        ];
+        $urlQuery = self::URL . 'sendMessage?' . http_build_query($urlParam);
 
         $url = curl_init($urlQuery);
         curl_setopt($url, CURLOPT_RETURNTRANSFER, true);
