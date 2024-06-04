@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    public function test()
+    {
+        return 'aasdasdasdasasd';
+    }
     public function index()
     {
         $user = Auth::user();

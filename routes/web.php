@@ -21,6 +21,7 @@ use App\Http\Controllers\UserController;
 Auth::routes();
 
 Route::post('/tg_message', [TelegramController::class, 'sendMessage'])->name('telegram.sendMessage');
+Route::get('/test', [UserController::class, 'test'])->name('test.tg');
 
 
 Route::get('/profile', [UserController::class, 'index'])->name('profile.index');

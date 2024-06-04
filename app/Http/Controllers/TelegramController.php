@@ -12,12 +12,31 @@ class TelegramController extends Controller
 
     public function sendMessage(Request $request)
     {
-        $urlParam = [
-            'chat_id' => $this->getUserId(),
-            'text' => urlencode($request->input('tg-message'))
-        ];
-        $urlQuery = self::URL . 'sendMessage?' . http_build_query($urlParam);
 
+        $userId = $this->getUserId();
+        $message = $request->input('tg-message');
+
+        $keyboard = [
+            'keyboard' => [
+                [
+                    [
+                        'text' => 'ПОДТВЕРДИТЬ',
+                        'callback_data' => '/start'
+                    ]
+                ]
+            ],
+            'one_time_keyboard' => TRUE,
+            'resize_keyboard' => TRUE
+        ];
+
+
+        $urlParam = [
+            'reply_markup' => json_encode($keyboard)
+        ];
+
+
+        $urlQuery = self::URL . 'sendMessage?chat_id=' . $userId . '&text=' . $message . '&' . http_build_query($urlParam);
+        //dd($urlQuery);
         $url = curl_init($urlQuery);
         curl_setopt($url, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($url, CURLOPT_SSL_VERIFYPEER, false);
@@ -35,7 +54,7 @@ class TelegramController extends Controller
         $response = file_get_contents($url);
         $data = json_decode($response, true);
 
-        if($data['ok']){
+        if ($data['ok']) {
             $lastUpdate = end($data['result']);
             $lastUpdateId = $lastUpdate['update_id'] + 1;
 
@@ -44,12 +63,13 @@ class TelegramController extends Controller
             $data = json_decode($response, true);
         }
     }
+
     public function getUserId()
     {
         $url = self::URL . 'getUpdates';
         $response = file_get_contents($url);
         $data = json_decode($response, true);
-        if($data['ok']){
+        if ($data['ok']) {
             $lastUpdate = end($data['result']);
             return $lastUpdate['message']['from']['id'];
         }
