@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\BotController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TelegramController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
@@ -20,9 +22,12 @@ use App\Http\Controllers\UserController;
 
 Auth::routes();
 
-Route::post('/tg_message', [TelegramController::class, 'sendMessage'])->name('telegram.sendMessage');
-Route::get('/test', [UserController::class, 'test'])->name('test.tg');
+Route::post('/send-message', [TelegramController::class, 'sendMessage'])->name('telegram.sendMessage');
 
+Route::get('/webhook', [TelegramController::class, 'handleWebhook'])->name('telegram.webhook');
+Route::get('/hook', [TelegramController::class, 'setHook']);
+
+Route::get('/', [UserController::class, 'homePage'])->name('home');
 
 Route::get('/profile', [UserController::class, 'index'])->name('profile.index');
 Route::post('/profile/update', [UserController::class, 'updateUser'])->name('profile.update');

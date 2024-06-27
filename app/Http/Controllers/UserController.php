@@ -8,20 +8,30 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class UserController extends Controller
 {
-    public function test()
+    public function homePage()
     {
-        return 'aasdasdasdasasd';
+        if (Auth::user()) {
+            return redirect(route('profile.index'));
+        } else {
+            return redirect(route('login'));
+        }
     }
+
     public function index()
     {
+        if (!Auth::user()) {
+            return redirect(route('login'));
+        }
         $user = Auth::user();
         Cookie::queue('name: ' . $user->name, $user->email, 60 * 24 * 365);
         $tasks = Task::where('user_id', $user->id)->orderByDesc('status')->get();
 
         return view('profile', compact('user', 'tasks'));
+
     }
 
     public function updateUser(Request $request)
@@ -37,10 +47,10 @@ class UserController extends Controller
     public function editPassword(Request $request)
     {
         if (!Hash::check($request->input('old_password'), Auth::user()->password)) {
-            return 'error 1';
+            return 'не верный пароль';
         }
         if ($request->input('new_password') !== $request->input('confirmed_password')) {
-            return 'error 2';
+            return 'новые пароли не совпадают';
         }
         Auth::user()->update(['password' => Hash::make($request->input('new_password'))]);
 

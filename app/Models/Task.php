@@ -18,5 +18,6 @@ class Task extends Model
         'user_id',
         'parent_id',
         'updated_at',
-        'due_date'];
+        'due_date'
+    ];
 }
