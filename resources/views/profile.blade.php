@@ -109,7 +109,10 @@
                                                     {{ $task->created_at }}</div>
                                                 <div class="col"><strong>Сроки выполнения задачи:</strong> <br>
                                                     {{ $task->due_date }}</div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> a05bb86e698045a597706ddf931e42d32fde3390
                                             </div>
                                             <hr>
                                             <a href="{{ route('task.setting', $task->id) }}">Изменить напоминание</a>

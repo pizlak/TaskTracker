@@ -18,6 +18,10 @@ class Task extends Model
         'user_id',
         'parent_id',
         'updated_at',
+<<<<<<< HEAD
         'due_date'
     ];
+=======
+        'due_date'];
+>>>>>>> a05bb86e698045a597706ddf931e42d32fde3390
 }

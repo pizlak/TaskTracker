@@ -17,7 +17,7 @@ class TelegramController extends Controller
     private const URL = 'https://api.telegram.org/bot' . self::TOKEN . '/';
 
 
-    public function setHook()
+  /*  public function setHook()
     {
         $getQuery = [
             'url' => 'https://yourtask.online/set-webhook'
@@ -26,11 +26,20 @@ class TelegramController extends Controller
 
         $a = $this->curl($url);
         dd($a);
-    }
+    }*/
 
     public function handleWebhook(Request $request)
     {
-       dd($request->input());
+        $data = json_encode(file_get_contents('php://input'));
+        $doc = $_SERVER['DOCUMENT_ROOT'] . '\data.txt';
+        $file = fopen($doc, "w");
+
+// Записываем данные в файл
+        fwrite($file,  $data);
+
+// Закрываем файл
+        fclose($file);
+
     }
 
     public function curl($urlQuery)

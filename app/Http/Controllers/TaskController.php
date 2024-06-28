@@ -6,7 +6,10 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+<<<<<<< HEAD
 use Illuminate\Support\Facades\Date;
+=======
+>>>>>>> a05bb86e698045a597706ddf931e42d32fde3390
 
 class TaskController extends Controller
 {
@@ -38,12 +41,17 @@ class TaskController extends Controller
         return redirect(route('profile.index'));
     }
 
+<<<<<<< HEAD
     public function viewSettingTask($id)
     {
+=======
+    public function viewSettingTask($id){
+>>>>>>> a05bb86e698045a597706ddf931e42d32fde3390
         $task = Task::where('id', request()->route('id'))->firstOrFail();
 
         return view('task', compact('task'));
     }
+<<<<<<< HEAD
 
     public function dateTask()
     {
@@ -93,4 +101,6 @@ class TaskController extends Controller
 <strong>Дата выполнения:</strong> $dueDate
 MESSAGE;
     }
+=======
+>>>>>>> a05bb86e698045a597706ddf931e42d32fde3390
 }

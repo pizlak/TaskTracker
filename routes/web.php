@@ -24,7 +24,7 @@ Auth::routes();
 
 Route::post('/send-message', [TelegramController::class, 'sendMessage'])->name('telegram.sendMessage');
 
-Route::get('/webhook', [TelegramController::class, 'handleWebhook'])->name('telegram.webhook');
+
 Route::get('/hook', [TelegramController::class, 'setHook']);
 
 Route::get('/', [UserController::class, 'homePage'])->name('home');
