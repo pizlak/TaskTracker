@@ -30,15 +30,8 @@ class TelegramController extends Controller
 
     public function handleWebhook(Request $request)
     {
-        $data = json_encode(file_get_contents('php://input'));
-        $doc = $_SERVER['DOCUMENT_ROOT'] . '\data.txt';
-        $file = fopen($doc, "w");
 
-// Записываем данные в файл
-        fwrite($file,  $data);
 
-// Закрываем файл
-        fclose($file);
 
     }
 

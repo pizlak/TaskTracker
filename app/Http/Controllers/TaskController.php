@@ -2,105 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TaskCreateRequest;
+use App\Http\Requests\TaskUpdateRequest;
 use App\Models\Task;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-<<<<<<< HEAD
-use Illuminate\Support\Facades\Date;
-=======
->>>>>>> a05bb86e698045a597706ddf931e42d32fde3390
 
-class TaskController extends Controller
+class TaskController extends BaseController
 {
-    public function create(Request $request)
+    public function create(TaskCreateRequest $request)
     {
-        $user = Auth::user();
-        $data = [
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'priority' => $request->input('priority'),
-            'user_id' => $user->id,
-            'due_date' => $request->input('due_date')];
-        Task::firstOrCreate($data);
+        $data = $request->validated();
+        $this->taskService->create($data, Auth::user());
+        $message = 'Новое напоминае успешно добавлено!';
+
+        return redirect(route('profile.index'))->with('success', $message);
+    }
+
+    public function updateTask(TaskUpdateRequest $request)
+    {
+        $data = $request->validated();
+        $this->taskService->update($request->input('id'), $data);
 
         return redirect(route('profile.index'));
     }
 
-    public function updateTask(Request $request)
+    public function viewTask(Task $task)
     {
-        $data = [
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'status' => $request->input('status'),
-            'type' => $request->input('type'),
-            'priority' => $request->input('priority'),
-            'due_date' => $request->input('due_date')];
-        Task::find($request->input('id'))->update($data);
-
-        return redirect(route('profile.index'));
-    }
-
-<<<<<<< HEAD
-    public function viewSettingTask($id)
-    {
-=======
-    public function viewSettingTask($id){
->>>>>>> a05bb86e698045a597706ddf931e42d32fde3390
-        $task = Task::where('id', request()->route('id'))->firstOrFail();
+        $task = Task::where('id', $task->id)->with('subtasks')->first();
 
         return view('task', compact('task'));
     }
-<<<<<<< HEAD
 
-    public function dateTask()
+    public function viewSettingTask(Task $task)
     {
-        $currentDate = date('d.m.Y');
-        $incompleteTasks = Task::where('status', '!=', 'Выполнено')->get();
+        if($task->user_id !== Auth::user()->id){
+            $message = 'У Вас нет прав доступа к записи c ID ' . $task->id . '!';
 
-        foreach ($incompleteTasks as $currentTask) {
-            $daysDiffs = (strtotime($currentTask->due_date) - strtotime($currentDate)) / (60 * 60 * 24);
-            if ($daysDiffs == 7) {
-                $message = $this->getMessage($currentTask->title, $currentTask->description, $currentTask->due_date);
-             dd(TelegramController::sendMessageKeyboard(BotController::getUserTelegramId($currentTask->user_id), urlencode($message)));
-
-            }
+            return redirect(route('profile.index'))->with('danger', $message);
         }
+
+        return view('task_setting', compact('task'));
     }
-    public function notification()
+    public function subtaskCreate(TaskCreateRequest $request)
     {
-        $response = file_get_contents(TelegramController::getUpdates());
-        $data = json_decode($response, true);
+        $data = $request->validated();
+        $this->taskService->createSubtask($data, Auth::user(), $request->input('id'));
+        $message = 'Новая подзадача успешно добавлена!';
 
-        if($data['ok']){
-            $lastUpdates =  $data['result'];
-            foreach ($lastUpdates as $lastUpdate){
-                if (isset($lastUpdate['callback_query'])) {
-                    $callbackQuery = $lastUpdate['callback_query']['data'];
-                    $tgId = $lastUpdate['callback_query']['from']['id'];
-                //  dd($tgId);
-                    if($callbackQuery === 'ExtendTask'){
-                       TelegramController::sendMessage($tgId, urlencode('Задание продлено на 7 дней'));
-                    } elseif ($callbackQuery === 'ClosedTask'){
-                       TelegramController::sendMessage($tgId, urlencode('Задание закрыто'));
-                    }
-                } else {
-                  echo 'net';
-                }
-            }
-        }
+        return redirect(route('task.view', $request->input('id')))->with('success', $message);
     }
-    public function getMessage($title, $description, $dueDate): string
+    public function viewSubtaskCreateForm(Task $task)
     {
-        return <<<MESSAGE
-\xE2\x9D\x97\xE2\x9D\x97\xE2\x9D\x97 <b>ВНИМАНИЕ! ДО ЗАВЕРШЕНИЯ ЗАДАНИЯ "<u>$title</u>" ОСТАЛАСЬ ВСЕГО ОДНА НЕДЕЛЯ</b>!
-
-<strong>Название:</strong> <i> $title</i>
-
-<strong>Описание:</strong> $description
-<strong>Дата выполнения:</strong> $dueDate
-MESSAGE;
+        return view('subtask_create', compact('task'));
     }
-=======
->>>>>>> a05bb86e698045a597706ddf931e42d32fde3390
 }

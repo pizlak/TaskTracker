@@ -34,6 +34,9 @@ Route::post('/profile/update', [UserController::class, 'updateUser'])->name('pro
 Route::post('/profile/edit_password', [UserController::class, 'editPassword'])->name('profile.edit.password');
 Route::get('/id{id}/profile/setting', [UserController::class, 'viewUserSetting'])->name('profile.setting');
 
-Route::get('/task/{id}', [TaskController::class, 'viewSettingTask'])->name('task.setting');
+Route::get('/setting/task/id{task}', [TaskController::class, 'viewSettingTask'])->name('task.setting');
+Route::get('/task/id{task}', [TaskController::class, 'viewTask'])->name('task.view');
+Route::get('/task/id{task}/subtask', [TaskController::class, 'viewSubtaskCreateForm'])->name('subtask.view');
 Route::post('/task/update', [TaskController::class, 'updateTask'])->name('task.update');
 Route::post('/profile/task', [TaskController::class, 'create'])->name('task.create');
+Route::post('/profile/subtask', [TaskController::class, 'subtaskCreate'])->name('subtask.create');

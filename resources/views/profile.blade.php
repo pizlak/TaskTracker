@@ -16,7 +16,6 @@
                 </div>
             </div>
             <div class="col-8">
-
                 <div><!-- Button trigger modal -->
                     <button type="button" class="btn btn-outline-primary mt-3" data-bs-toggle="modal"
                             data-bs-target="#staticBackdrop">
@@ -72,11 +71,16 @@
                         </div>
                     </div>
                 </div>
-
-
+                @if(session('success'))
+                    <div class="alert alert-success mt-3">{{ session('success') }}</div>
+                @endif
+                @if(session('danger'))
+                    <div class="alert alert-danger mt-3">{{ session('danger') }}</div>
+                @endif
                 <div class="accordion accordion-flush mt-3" id="accordionFlushExample">
                     <div class="accordion-item">
                         @foreach($tasks as $index => $task)
+                            @if($task->parent_id == null)
                             <div class="accordion" id="accordionExample">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="heading-{{ $index }}">
@@ -109,26 +113,20 @@
                                                     {{ $task->created_at }}</div>
                                                 <div class="col"><strong>Сроки выполнения задачи:</strong> <br>
                                                     {{ $task->due_date }}</div>
-<<<<<<< HEAD
-
-=======
->>>>>>> a05bb86e698045a597706ddf931e42d32fde3390
                                             </div>
                                             <hr>
                                             <a href="{{ route('task.setting', $task->id) }}">Изменить напоминание</a>
+                                            <a href="{{ route('task.view', $task->id) }}">Подробнее</a>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            @endif
                         @endforeach
                     </div>
                 </div>
             </div>
-
-
-
-
-
         </div>
 
 @endsection

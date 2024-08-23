@@ -13,13 +13,7 @@
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "laravel/ui": "^3.4",
-<<<<<<< HEAD
-        "longman/telegram-bot": "^0.82.0"
-=======
-        "ext-json": "*",
-        "ext-curl": "*"
->>>>>>> a05bb86e698045a597706ddf931e42d32fde3390
+        "laravel/ui": "^3.4"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
