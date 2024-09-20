@@ -10,24 +10,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class User extends Model implements Authenticatable
 {
     use HasFactory;
-    protected $fillable = [
-        'name',
-        'email',
-        'email_verified_at',
-        'password',
-        'remember_token',
-        'created_at',
-        'updated_at'
-    ];
-
+    protected $guarded = false;
     protected $hidden = [
         'password',
         'remember_token',
     ];
-
     public function tasks(): hasMany
     {
         return $this->hasMany(Task::class, 'user_id', 'id');
+    }
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Commentary::class, 'user_id', 'id');
+    }
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class, 'user_id', 'id');
     }
 
     public function getAuthIdentifierName()

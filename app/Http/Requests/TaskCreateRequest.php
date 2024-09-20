@@ -24,7 +24,7 @@ class TaskCreateRequest extends FormRequest
      * @return array
      */
 
-    public function rules(User $user)
+    public function rules(): array
     {
         return [
             'title' => 'string|min:3|max:100|required',

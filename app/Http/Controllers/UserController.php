@@ -2,46 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;
+use App\Http\Requests\UserUpdateRequest;
+use App\Models\Image;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Http;
 
 
-class UserController extends Controller
+class UserController extends BaseController
 {
     public function homePage()
     {
         if (Auth::user()) {
-            return redirect(route('profile.index'));
+            return redirect(route('profile.index', Auth::user()->id));
         } else {
             return redirect(route('login'));
         }
     }
-    public function index()
+    public function index(User $user)
     {
-        $user = Auth::user();
-        if (!$user) {
-            return redirect(route('login'));
-        }
-
         Cookie::queue('name: ' . $user->name, $user->email, 60 * 24 * 365);
-        $tasks = Task::where('user_id', $user->id)->orderByDesc('status')->get();
+        $profileImage = $this->userService->profileImage($user);
+        $previewAlbumImages = Image::where('user_id', $user->id)->latest()->limit(5)->get();
 
-        return view('profile', compact('user', 'tasks'));
-
-
+        return view('profile', compact('user', 'profileImage', 'previewAlbumImages'));
     }
 
-
-    public function updateUser(Request $request)
+    public function updateUser(/*UserUpdateRequest*/ Request $request)
     {
-        $data = [
-            'name' => $request->input('name'),
-            'email' => $request->input('email')];
-        Auth::user()->update($data);
+        $data = $request->all();
+
+        User::find(Auth::user()->id)->update($data);
 
         return redirect(route('profile.setting', Auth::user()->id));
     }

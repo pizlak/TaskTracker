@@ -17,13 +17,19 @@ class TaskFactory extends Factory
      */
     public function definition()
     {
-        return [
-                'title' => $this->faker->jobTitle(),
-                'status' => Task::get()->random()->status,
-                'type' => Task::get()->random()->type,
-                'description' => $this->faker->text(),
-                'user_id' => User::get()->random()->id,
-                'parent_id' => $this->faker->randomElement([null, Task::get()->random()->id]),
+        $userId = User::inRandomOrder()->first()->id;
+        $task = Task::where('user_id', $userId)->where('parent_id', NULL)->inRandomOrder()->first();
+        $data = [
+            'title' => $this->faker->jobTitle(),
+            'status' => Task::get()->random()->status,
+            'type' => Task::get()->random()->type,
+            'description' => $this->faker->text(),
+            'user_id' => $userId,
+            'parent_id' => NULL,
         ];
+        if(isset($task->id)){
+            $data['parent_id'] = $this->faker->randomElement([NULL, $task->id]);
+        }
+        return $data;
     }
 }

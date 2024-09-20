@@ -6,6 +6,7 @@ use App\Http\Requests\TaskCreateRequest;
 use App\Http\Requests\TaskUpdateRequest;
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends BaseController
@@ -16,7 +17,7 @@ class TaskController extends BaseController
         $this->taskService->create($data, Auth::user());
         $message = 'Новое напоминае успешно добавлено!';
 
-        return redirect(route('profile.index'))->with('success', $message);
+        return redirect(route('tasks.view'))->with('success', $message);
     }
 
     public function updateTask(TaskUpdateRequest $request)
@@ -26,24 +27,36 @@ class TaskController extends BaseController
 
         return redirect(route('profile.index'));
     }
+    public function viewTasks(Request $request)
+    {
+        $user = Auth::user();
+        $taskQuery = Task::query()->where('user_id', $user->id)->where('parent_id', NULL);
+        if(isset($request['status'])){
+            $tasks = $taskQuery->where('status', $request['status']);
+        }
+        $tasks = $taskQuery->orderByDesc('status')->paginate(15);
 
+        return view('tasks', compact('tasks', 'user'));
+    }
     public function viewTask(Task $task)
     {
-        $task = Task::where('id', $task->id)->with('subtasks')->first();
+        $task = Task::where('id', $task->id)->first();
+        $subtasks = $task->subtasks()->orderBy('status', 'desc')->paginate(3);
 
-        return view('task', compact('task'));
+        return view('task', compact('task', 'subtasks'));
     }
 
     public function viewSettingTask(Task $task)
     {
-        if($task->user_id !== Auth::user()->id){
+        if ($task->user_id !== Auth::user()->id) {
             $message = 'У Вас нет прав доступа к записи c ID ' . $task->id . '!';
 
-            return redirect(route('profile.index'))->with('danger', $message);
+            return redirect(route('tasks.view'))->with('danger', $message);
         }
 
         return view('task_setting', compact('task'));
     }
+
     public function subtaskCreate(TaskCreateRequest $request)
     {
         $data = $request->validated();
@@ -52,8 +65,19 @@ class TaskController extends BaseController
 
         return redirect(route('task.view', $request->input('id')))->with('success', $message);
     }
+
     public function viewSubtaskCreateForm(Task $task)
     {
         return view('subtask_create', compact('task'));
+    }
+
+    public function test()
+    {
+        $tasks = Task::all();
+        $users = User::with(['tasks' => function ($q) {
+            $q->where('status', 'Выполнено')->where('parent_id', NULL);
+        }])->get();
+
+        return view('test', compact('users', 'tasks'));
     }
 }
